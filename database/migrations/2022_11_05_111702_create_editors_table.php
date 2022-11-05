@@ -13,15 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('paraphrases', function (Blueprint $table) {
+        Schema::create('editors', function (Blueprint $table) {
             $table->id();
-            $table->string('interview_id');
-            $table->foreignId('editor_id');
-            $table->text('paraphrase');
-            $table->integer('position_start');
-            $table->integer('position_end');
-
-            $table->foreign('interview_id')->on('interviews')->references('id');
+            $table->string('name');
         });
     }
 
@@ -32,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('paraphrase');
+        Schema::dropIfExists('editors');
     }
 };
