@@ -38,6 +38,9 @@ class ImportHtmlCommand extends Command
             exit(Command::FAILURE);
         }
 
+        Paraphrase::truncate();
+        $this->warn('All paraphrases deleted.');
+
         $files = File::glob(storage_path('sources/*.html'));
 
         foreach($files as $file) {
@@ -120,9 +123,6 @@ class ImportHtmlCommand extends Command
      */
     private function createParaphrases(array $contentRows, Collection $editors): void
     {
-        Paraphrase::truncate();
-        $this->warn('All paraphrases deleted.');
-
         $rows = count(data_get($contentRows, 'editor', []));
         $this->info('Creating new paraphrases');
         $bar = new ProgressBar($this->output, $rows);
