@@ -1,4 +1,4 @@
-# MAXQDA HTML to Ecel
+# MAXQDA-Paraphrase-Matrix HTML to Excel
 The aim of this project is to create a propper excel-file from the html output of the paraphrases.
 
 The project does not need a database-server. It is able to work ith SQLite.
