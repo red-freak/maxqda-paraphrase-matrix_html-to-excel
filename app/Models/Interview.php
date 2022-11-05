@@ -26,6 +26,6 @@ class Interview extends Model
 
     public function editors()
     {
-        return $this->hasManyThrough(Editor::class, Paraphrase::class);
+        return $this->belongsToMany(Editor::class, 'paraphrases');
     }
 }
