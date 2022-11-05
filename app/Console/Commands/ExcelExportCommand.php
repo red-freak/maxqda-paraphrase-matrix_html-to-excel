@@ -15,6 +15,7 @@ use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use Str;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class ExcelExportCommand extends Command
 {
@@ -54,14 +55,19 @@ class ExcelExportCommand extends Command
             ->setShouldWrapText()
             ->setBackgroundColor(Color::LIGHT_BLUE)
             ->build();
+
         $simpleExcelWriter->setHeaderStyle($style);
 
         $interviews = Interview::all();
         $interview_last = $interviews->last();
 
-        $interviews->each(function (Interview $interview) use ($writer, $simpleExcelWriter, $interview_last) {
+        // initialize the progress bar
+        $bar = $this->initializeProgressBar($interviews);
+
+        $interviews->each(function (Interview $interview) use ($writer, $simpleExcelWriter, $interview_last, $bar) {
             // set the interview name as sheet name
             $writer->getCurrentSheet()->setName($interview->id);
+            $bar->setMessage('Exporting interview ' . $interview->id . '...');
 
             // collect and sort the data
             $editors = $interview->editors->unique();
@@ -78,12 +84,15 @@ class ExcelExportCommand extends Command
                 $simpleExcelWriter->addRow($rowData);
 
                 ++$row;
+                $bar->advance();
             } while (true);
 
             if (!$interview->is($interview_last)) {
                 $writer->addNewSheetAndMakeItCurrent();
             }
         });
+
+        $this->finishProgressBar($bar);
 
         return Command::SUCCESS;
     }
@@ -133,13 +142,15 @@ class ExcelExportCommand extends Command
         });
 
         return $editorIterators;
-    }/**
- * @param  int  $row
- * @param  EloquentCollection  $editors
- * @param  SupportCollection  $editorIterators
- *
- * @return array
- */
+    }
+
+    /**
+     * @param  int  $row
+     * @param  EloquentCollection  $editors
+     * @param  SupportCollection  $editorIterators
+     *
+     * @return array
+     */
     private function getRowData(int $row, EloquentCollection $editors, SupportCollection $editorIterators): array
     {
         $rowData = [
@@ -245,5 +256,34 @@ class ExcelExportCommand extends Command
         }
 
         return $rowData;
+    }
+
+    /**
+     * @param  EloquentCollection  $interviews
+     *
+     * @return ProgressBar
+     */
+    private function initializeProgressBar(EloquentCollection $interviews): ProgressBar
+    {
+        $this->info('Exporting paraphrases to Excel...');
+        $this->newLine();
+        $paraphrasesCount = Paraphrase::whereIn('interview_id', $interviews->pluck('id'))->count();
+        $bar              = $this->output->createProgressBar($paraphrasesCount);
+        $bar->start();
+        $bar->setFormat("<fg=green>%message%</>\n %current%/%max% [%bar%] %percent:3s%%");
+
+        return $bar;
+    }
+
+    /**
+     * @param  ProgressBar  $bar
+     *
+     * @return void
+     */
+    private function finishProgressBar(ProgressBar $bar): void
+    {
+        $bar->setMessage('Exporting finished.');
+        $bar->finish();
+        $this->newLine(2);
     }
 }
