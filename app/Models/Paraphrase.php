@@ -2,12 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $editor_id
+ * @property string $interview_id
+ * @property string $paraphrase
+ * @property int position_start
+ * @property int position_end
+ * @property-read Editor $editor
+ * @property-read Interview $interview
+ */
 class Paraphrase extends Model
 {
-    use HasFactory;
     public $timestamps = false;
 
     protected $fillable = [
