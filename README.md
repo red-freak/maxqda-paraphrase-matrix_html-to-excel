@@ -21,5 +21,16 @@ The project does not need a database-server. It is able to work ith SQLite.
 ## tested with
 - MAXQDA 2022
 
+## Screenshots
+### MAXQDA-Paraphrases
+<img src="./resources/assets/MAXQDA.png" width="600">
+
+### MAXQDA-Paraphrases-HTML-Export
+<img src="./resources/assets/HTML.png" width="600">
+
+### Result of this tool
+<img src="./resources/assets/Excel.png" width="600">
+
+
 ## Licence
 This package is free to use as stated by the [LICENCE.md](LICENSE.md) under the MIT License, but you can [buy me a coffee](https://www.buymeacoffee.com/redFreak) if you want :D.
