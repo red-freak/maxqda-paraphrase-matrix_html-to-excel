@@ -34,12 +34,14 @@ class ImportHtmlCommand extends Command
      */
     public function handle()
     {
-        if (!$this->confirm('To create the paraphrases, the existing ones will be deleted. Continue?', true)) {
+        if (!$this->confirm('To create the new paraphrases, the existing ones will be deleted. Continue?', true)) {
             exit(Command::FAILURE);
         }
 
         Paraphrase::truncate();
-        $this->warn('All paraphrases deleted.');
+        Editor::truncate();
+        Interview::truncate();
+        $this->warn('All data deleted.');
 
         $files = File::glob(storage_path('sources/*.html'));
 
@@ -155,7 +157,7 @@ class ImportHtmlCommand extends Command
      */
     private function getRawRows($contentBlocks)
     {
-        preg_match_all('/(?:<td.*?>|<br \/><br \/><br \/>)(?<text>.*?)<br \/><br \/>.*?\((?<editor>\w*?)\)\s&gt;.*?&gt;\s(?<interview_id>.*?),\sPos\.\s(?<position_start>\d*)\s-\s(?<position_end>\d*)(?=<\/td>|\s<br \/><br \/><br \/>)/s',
+        preg_match_all('/(?:<td.*?>|<br \/><br \/><br \/>)(?<text>.*?)<br \/><br \/>.*?(?<editor>\w*?)\s&gt;.*?(:?&gt;)?\s?(?<interview_id>.*?),\sPos\.\s(?<position_start>\d*)\s-\s(?<position_end>\d*)(?=<\/td>|\s<br \/><br \/><br \/>)/s',
             $contentBlocks,
             $contentRows
         );

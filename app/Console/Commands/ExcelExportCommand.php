@@ -45,7 +45,6 @@ class ExcelExportCommand extends Command
         $simpleExcelWriter = SimpleExcelWriter::create(
             storage_path('exports/export_'. Str::slug($now->toDateTimeString()) . '.xlsx')
         );
-        $writer = $simpleExcelWriter->getWriter();
 
         // set header style
         /** @var Style $style */
@@ -64,9 +63,9 @@ class ExcelExportCommand extends Command
         // initialize the progress bar
         $bar = $this->initializeProgressBar($interviews);
 
-        $interviews->each(function (Interview $interview) use ($writer, $simpleExcelWriter, $interview_last, $bar) {
+        $interviews->each(function (Interview $interview) use ($simpleExcelWriter, $interview_last, $bar) {
             // set the interview name as sheet name
-            $writer->getCurrentSheet()->setName($interview->id);
+            $simpleExcelWriter->nameCurrentSheet($interview->id);
             $bar->setMessage('Exporting interview ' . $interview->id . '...');
 
             // collect and sort the data
@@ -88,7 +87,7 @@ class ExcelExportCommand extends Command
             } while (true);
 
             if (!$interview->is($interview_last)) {
-                $writer->addNewSheetAndMakeItCurrent();
+                $simpleExcelWriter->addNewSheetAndMakeItCurrent();
             }
         });
 
